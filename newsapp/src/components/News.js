@@ -7,17 +7,48 @@ export class News extends Component {
     console.log("Hello I am a constructor from News component");
     this.state = {
     articles: [],
-    loading: false
+    loading: false,
+    page:1
     }
   }
  async componentDidMount(){
- let url= "https://newsapi.org/v2/top-headlines?country=in&apiKey=6d140f11ca964cd6b558af4ee700f5c5";
+ let url= "https://newsapi.org/v2/top-headlines?country=in&apiKey=6d140f11ca964cd6b558af4ee700f5c5&page=1pageSize=20";
  let data =  await fetch(url);
  let parseData = await data.json()
  console.log(parseData);
- this.setState({articles: parseData.articles})
+ this.setState({articles: parseData.articles, totalResults:parseData.totalResults})
   }
 
+  handlePrevClick = async()=>{
+ console.log("Previous");
+
+ let url= `https://newsapi.org/v2/top-headlines?country=in&apiKey=6d140f11ca964cd6b558af4ee700f5c5&page=${this.state.page - 1}&pageSize=20`;
+ let data =  await fetch(url);
+ let parseData = await data.json()
+ console.log(parseData);
+ this.setState({
+  page: this.state.page - 1,
+  articles: parseData.articles
+ })
+
+  }
+
+  handleNextClick = async()=>{
+ console.log("Next");
+ if (this.state.page + 1 > Math.ceil(this.state.totalResults/20)){
+
+ }
+ else{
+ let url= `https://newsapi.org/v2/top-headlines?country=in&apiKey=6d140f11ca964cd6b558af4ee700f5c5&page=${this.state.page + 1}&pageSize=20`;
+ let data =  await fetch(url);
+ let parseData = await data.json()
+ console.log(parseData);
+ this.setState({
+  page: this.state.page + 1,
+  articles: parseData.articles
+ })
+}
+  }
 
   render() {
     return (
@@ -32,6 +63,10 @@ export class News extends Component {
         })}
         
           
+        </div>
+        <div className="container d-flex justify-content-between">
+          <button disabled={this.state.page<=1} type="button" className="btn btn-dark" onClick={this.handlePrevClick}> &larr; Previous</button>
+          <button type="button" className="btn btn-dark" onClick={this.handleNextClick}>Next &rarr;</button>
         </div>
       </div>
     )
